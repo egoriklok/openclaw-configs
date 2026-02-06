@@ -1,0 +1,43 @@
+# Telegram Channel Configuration
+# Version: 2026.2.3
+# Last Updated: February 6, 2026
+
+telegram:
+  bot_name: OpenClaw-ChatBot
+  configured: true
+  running: false  # Currently disabled due to auth issues
+  
+bot_status:
+  configuration: Configured ✅
+  running: No ❌
+  mode: polling
+  last_start: 49 minutes ago
+  last_probe: 7 minutes ago
+  connection_status: "401: Unauthorized"
+  
+error_status:
+  call_getMe_failed: "401: Unauthorized"
+  probe_failed: "401 Unauthorized"
+  accounts_status: "Unsupported schema node. Use Raw mode."
+  
+bot_token:
+  # Token stored in GitHub Secrets
+  reference: ${TELEGRAM_BOT_TOKEN}
+  stored_in: GitHub Secrets / CloudRun env var
+  
+connection_method: polling
+alternative_mode: webhook
+webhook_available: false  # requires public IP
+
+available_actions:
+  - Delete Message: Disabled
+  - Reactions: Disabled
+  - Custom commands: Not configured
+  
+discovery_instructions: |
+  1. Search @BotFather in Telegram
+  2. Create or update OpenClaw bot
+  3. Get bot token
+  4. Update TELEGRAM_BOT_TOKEN in GitHub Secrets
+  5. Restart CloudRun container
+  6. Test with /probe command
