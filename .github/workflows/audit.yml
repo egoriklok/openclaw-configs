@@ -1,0 +1,48 @@
+name: Config Audit and Version Control
+
+on:
+  push:
+    paths:
+      - 'configs/**'
+      - '.env*'
+      - 'clawdbot.json'
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Check for sensitive data
+        run: |
+          echo "=== OpenClaw Config Audit ==="
+          if grep -r "token=\|TOKEN=\|password=\|PASSWORD=" configs/ .env* 2>/dev/null | grep -v ".example"; then
+            echo "⚠️ WARNING: Sensitive tokens found in config files!"
+            exit 1
+          fi
+      
+      - name: Generate audit log
+        run: |
+          git log --oneline --all --decorate > AUDIT_LOG.txt
+          git log --format="%h %aD %an: %s" --name-status > DETAILED_AUDIT.txt
+          echo "Audit log generated at $(date)" >> AUDIT_LOG.txt
+      
+      - name: Create issue for changes
+        if: github.event_name == 'push'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const changedFiles = '${{ github.event.changed_files }}';
+            const auditLog = fs.readFileSync('AUDIT_LOG.txt', 'utf8');
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Config changes detected: ${new Date().toISOString()}`,
+              body: `## OpenClaw Configuration Audit\n\n${auditLog}\n\nReview the changes and verify they are authorized.`
+            });
