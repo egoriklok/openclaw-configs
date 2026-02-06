@@ -1,0 +1,87 @@
+# OpenClaw Cost Optimization Configuration
+# Based on 97% savings guide from Matt Ganzac (February 2026)
+# Version: 2026.2.3
+
+cost_baseline:
+  estimated_daily_cost_before: $25-150/day
+  main_issue: "Heartbeat context reloading every 30 minutes"
+  solution: "Local-only heartbeat checks (80% reduction)"
+
+step_1_critical_heartbeat_optimization:
+  description: "Disable Heartbeat Context Reloading (80% Savings)"
+  status: IMPLEMENTED
+  config:
+    heartbeat:
+      enabled: true
+      intervalSeconds: 300
+      contextRefresh: "local-only"
+      skipContextReload: true
+      skipSessionHistory: true
+  impact:
+    cost_reduction: "80%"
+    before: "$25/day idle agents"
+    after: "~$5/day idle agents"
+    monthly_savings: "~$270"
+
+step_2_multi_model_optimization:
+  description: "Model Distribution Strategy (10% Additional Savings)"
+  status: PLANNED
+  distribution:
+    claude_opus:
+      weight: 0.01
+      use_cases: ["complex-reasoning", "code-generation"]
+      cost: "$3.00 input / $15.00 output per 1K tokens"
+    claude_sonnet:
+      weight: 0.10
+      use_cases: ["general-analysis", "research"]
+      cost: "$3.00 input / $15.00 output per 1K tokens"
+    claude_haiku:
+      weight: 0.75
+      use_cases: ["classification", "formatting", "data-entry"]
+      cost: "$0.80 input / $2.40 output per 1K tokens (75% CHEAPER)"
+    gpt_5_2:
+      weight: 0.14
+      use_cases: ["fallback", "openai-specific"]
+
+step_3_session_compression:
+  description: "Session Management & Compression (5% Additional Savings)"
+  status: PLANNED
+  config:
+    compression: enabled
+    cachingStrategy: aggressive
+    maxHistoryLength: 50
+    groupMessages: true
+    compressThreshold: 5000
+
+step_4_prompt_caching:
+  description: "Anthropic Prompt Caching (2% Additional Savings)"
+  status: PLANNED
+  cache:
+    enabled: true
+    ttl: 3600
+    strategy: "prompt-caching"
+    cost_reduction: "90% (0.0003 vs 0.003 per 1K cached)"
+
+step_5_token_tracking:
+  description: "Token Tracking & Monitoring"
+  status: IMPLEMENTED
+  config:
+    tokenTracking:
+      enabled: true
+      verbose: true
+      logCosts: true
+      alertThreshold: 10.0
+
+expected_results:
+  scenario: "Agent idle 24 hours with 50K context"
+  before_optimization:
+    heartbeats: "48 * $0.15 = $7.20"
+    task_overhead: "$0.50"
+    daily_total: "$7.70+"
+    monthly: "~$230+"
+  after_optimization_all_steps:
+    heartbeats: "$0 (local only)"
+    task_overhead: "$0.75 (90% reduction)"
+    daily_total: "$0.75"
+    monthly: "~$22.50"
+    annual_savings: "~$270 saved vs $2,760/year before"
