@@ -1,0 +1,42 @@
+# OpenClaw Gateway Configuration
+# Version: 2026.2.3
+# Last Updated: February 6, 2026
+
+gateway:
+  environment: production
+  region: eu-central-1
+  status: connected
+  uptime_minutes: 2
+  instances_active: 2
+
+connection_details:
+  base_url: https://openclaw-aqyfvmsb.eu-central-1.clawcloudrun.com
+  websocket_url: wss://openclaw-aqyfvmsb.eu-central-1.clawcloudrun.com
+  # Token stored in GitHub Secrets - DO NOT commit
+  gateway_token: ${OPENCLAW_GATEWAY_TOKEN}
+  region: eu-central-1
+
+health_check:
+  gateway: Connected ✅
+  token: Valid and Active ✅
+  health_status: OK ✅
+  uptime: 2+ minutes ✅
+  instances: 2 running ✅
+
+session_configuration:
+  default_session_key: agent:main:main
+  authentication: token-based
+  channel_ready: true
+
+available_features:
+  - Chat Interface: Full-featured
+  - Channel Support: Telegram, WhatsApp, Discord, Signal, iMessage
+  - Agent Control: Full control over behavior & skills
+  - Session Management: Multiple sessions tracking
+  - Cron Jobs: Automated task scheduling
+  - Model Support: Claude Opus 4.5 + AntiGravity models
+
+metrics:
+  sessions_active: 1
+  cron_jobs_enabled: true
+  websocket_protocol: wss (secure)
